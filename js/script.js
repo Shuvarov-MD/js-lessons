@@ -1,16 +1,29 @@
 'use strict';
 
+//Функция проверки на число
+let isNumber = function(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
+
 //Объявление переменных
-let money = +prompt('Ваш месячный доход?', ''),
+let money,
   income = 'фриланс',
   addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', ''),
   deposit = confirm('Есть ли у вас депозит в банке?'),
   mission = 1e6,
   period = 12,
-  expenses1 = prompt('Введите обязательную статью расходов?', ''),
-  amount1 = +prompt('Во сколько это обойдется?', ''),
-  expenses2 = prompt('Введите обязательную статью расходов?', ''),
-  amount2 = +prompt('Во сколько это обойдется?', '');
+  expenses = [];
+
+
+//Функция месячный доход
+let start = function() {
+  do {
+    money = prompt('Ваш месячный доход?', '');
+  }  while (!isNumber(money));
+};
+
+start();
 
 
 //Определение типа данных
@@ -28,16 +41,31 @@ console.log(addExpenses.toLowerCase().split(', '));
 
 
 //Сумма всех обязательных расходов за месяц
-function getExpensesMonth() {
-  return amount1 + amount2;
-}
+let getExpensesMonth = function() {
+  let sum = 0;
 
-console.log('Расходы за месяц: ' + getExpensesMonth());
+  for (let i = 0; i < 2; i++) {
+    expenses[i] = prompt('Введите обязательную статью расходов?', '');
+    let amount;
+
+    do {
+      amount = prompt('Во сколько это обойдется?', '');
+    } while (!isNumber(amount));
+    sum += +amount;
+  }
+  
+  console.log(expenses);
+  return sum;
+};
+
+let expensesAmount = getExpensesMonth();
+
+console.log('Расходы за месяц: ' + expensesAmount);
 
 
 //Накопления за месяц
 function getAccumulatedMonth() {
-  return money - getExpensesMonth();
+  return money - expensesAmount;
 }
 
 let accumulatedMonth = getAccumulatedMonth();
@@ -45,7 +73,7 @@ let accumulatedMonth = getAccumulatedMonth();
 
 //Достижение цели
 function getTargetMonth() {
-  return Math.ceil(mission / accumulatedMonth);
+  return ((mission / accumulatedMonth) < 0 || !isFinite(mission / accumulatedMonth)) ? 'Цель не будет достигнута' : Math.ceil(mission / accumulatedMonth);
 }
 
 console.log('Cрок достижения цели (в месяцах): ' + getTargetMonth());
