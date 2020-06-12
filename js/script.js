@@ -51,7 +51,7 @@ let appData = {
     }
   },
   //Бюджеты на месяц и день
-  getAccumulatedMonth: function() {
+  getBudget: function() {
     appData.budgetMonth = appData.budget - appData.expensesMonth;
     appData.budgetDay = Math.floor(appData.budgetMonth  / 30);
   },
@@ -78,7 +78,7 @@ appData.budget = +money;
 
 appData.asking();
 appData.getExpensesMonth();
-appData.getAccumulatedMonth();
+appData.getBudget();
 appData.getTargetMonth();
 appData.getStatusIncome();
 
