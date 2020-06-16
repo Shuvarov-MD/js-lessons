@@ -17,7 +17,7 @@ start();
 
 
 //Создаем объект
-let appData = {
+const appData = {
   income: {},
   addIncome: [],
   expenses: {},
