@@ -15,9 +15,34 @@ let money,
 
 start();
 
+//Объявление переменных
+let buttonStart = document.getElementById('start'),
+  plus1 = document.getElementsByTagName('button')[0],
+  plus2 = document.getElementsByTagName('button')[1],
+  depositCheck = document.querySelector('#deposit-check'),
+  additionalIncomeItem1 = document.querySelectorAll('.additional_income-item')[0],
+  additionalIncomeItem2 = document.querySelectorAll('.additional_income-item')[1],
+  result = document.querySelector('.result'),
+  budgetDayValue = result.getElementsByClassName('budget_day-value'),
+  expensesMonthValue = result.getElementsByClassName('expenses_month-value'),
+  additionalIncomeValue = result.getElementsByClassName('additional_income-value'),
+  additionalExpensesValue = result.getElementsByClassName('additional_expenses-value'),
+  incomePeriodValue = result.getElementsByClassName('income_period-value'),
+  targetMonthValue = result.getElementsByClassName('target_month-value'),
+  data = document.querySelector('.data'),
+  salaryAmount = data.querySelector('.salary-amount'),
+  incomeTitle = data.querySelector('input.income-title'),
+  incomeAmount = data.querySelector('.income-amount'),
+  expensesTitle = data.querySelector('input.expenses-title'),
+  expensesAmount = data.querySelector('.expenses-amount'),
+  additionalExpensesItem = data.querySelector('.additional_expenses-item'),
+  targetAmount = data.querySelector('.target-amount'),
+  periodSelect = document.querySelector('.period-select');
+
 
 //Создаем объект
 const appData = {
+  budget: +money,
   income: {},
   addIncome: [],
   expenses: {},
@@ -108,9 +133,6 @@ const appData = {
     return appData.budgetMonth * appData.period;
   }
 };
-
-appData.budget = +money;
-
 
 appData.asking();
 appData.getExpensesMonth();
