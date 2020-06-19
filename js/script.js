@@ -30,8 +30,7 @@ let start = document.getElementById('start'),
   periodSelect = document.querySelector('.period-select'),
   incomeItems = document.querySelectorAll('.income-items'),
   periodAmount = document.querySelector('.period-amount');
- /* placeholderSum = document.querySelectorAll('[placeholder="Сумма"]'),
-  placeholderName = document.querySelectorAll('[placeholder="Наименование"]');*/
+
 
 //Создаем объект
 const appData = {
@@ -69,8 +68,6 @@ const appData = {
 
     expensesItems[0].parentNode.insertBefore(cloneExpensesItem, expensesPlus);
     expensesItems = document.querySelectorAll('.expenses-items');
-    appData.validateNumber();
-    appData.validateName();
 
     if (expensesItems.length === 3) {
       expensesPlus.style.display = 'none';
@@ -86,8 +83,6 @@ const appData = {
 
     incomeItems[0].parentNode.insertBefore(cloneIncomeItem, incomePlus);
     incomeItems = document.querySelectorAll('.income-items');
-    appData.validateNumber();
-    appData.validateName();
 
     if (incomeItems.length === 3) {
       incomePlus.style.display = 'none';
@@ -199,27 +194,62 @@ const appData = {
   },
   //Валидация чисел
   validateNumber: function() {
-    let placeholderSum = document.querySelectorAll('[placeholder="Сумма"]');
+    let income = data.querySelector('.income'),
+      expenses = data.querySelector('.expenses');
 
-    let replaceNumber = function() {
-      this.value = this.value.replace(/[^\d]/g, '');
+    let replaceIncomeNumber = function() {
+      let placeholderNumber = income.querySelectorAll('[placeholder="Сумма"]');
+      placeholderNumber.forEach(function(item) {
+        item.value = item.value.replace(/[^\d]/g, '');
+      });
     };
 
-    placeholderSum.forEach(function(item) {
-      item.addEventListener('input', replaceNumber);
+    let replaceExpensesNumber = function() {
+      let placeholderNumber = expenses.querySelectorAll('[placeholder="Сумма"]');
+      placeholderNumber.forEach(function(item) {
+        item.value = item.value.replace(/[^\d]/g, '');
+      });
+    };
+
+    income.addEventListener('input', replaceIncomeNumber);
+    expenses.addEventListener('input', replaceExpensesNumber);
+    salaryAmount.addEventListener('input', function() {
+      salaryAmount.value = salaryAmount.value.replace(/[^\d]/g, '');
+    });
+    targetAmount.addEventListener('input', function() {
+      targetAmount.value = targetAmount.value.replace(/[^\d]/g, '');
     });
   },
   //Валидация слов
   validateName: function() {
-    let placeholderName = document.querySelectorAll('[placeholder="Наименование"]');
+    let income = data.querySelector('.income'),
+      expenses = data.querySelector('.expenses'),
+      additionalIncome = data.querySelector('.additional_income');
 
-   let replaceName = function() {
-      this.value = this.value.replace(/[^а-я\s\W]/g, '');
+    let replaceIncomeName = function() {
+      let placeholderName = income.querySelectorAll('[placeholder="Наименование"]');
+      placeholderName.forEach(function(item) {
+        item.value = item.value.replace(/[^а-я\s\W]/g, '');
+      });
     };
 
-    placeholderName.forEach(function(item) {
-      item.addEventListener('input', replaceName);
-    });
+    let replaceExpensesName = function() {
+      let placeholderName = expenses.querySelectorAll('[placeholder="Наименование"]');
+      placeholderName.forEach(function(item) {
+        item.value = item.value.replace(/[^а-я\s\W]/g, '');
+      });
+    };
+
+    let replaceadditionalIncomeName = function() {
+      let placeholderName = additionalIncome.querySelectorAll('[placeholder="Наименование"]');
+      placeholderName.forEach(function(item) {
+        item.value = item.value.replace(/[^а-я\s\W]/g, '');
+      });
+    };
+
+    income.addEventListener('input', replaceIncomeName);
+    expenses.addEventListener('input', replaceExpensesName);
+    additionalIncome.addEventListener('input', replaceadditionalIncomeName);
   }
 };
 
