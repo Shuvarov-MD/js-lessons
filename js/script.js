@@ -66,6 +66,7 @@ const appData = {
     for (let i = 0; i < cloneExpensesItem.children.length; i++) {
       cloneExpensesItem.children[i].value = null;
     }
+
     expensesItems[0].parentNode.insertBefore(cloneExpensesItem, expensesPlus);
     expensesItems = document.querySelectorAll('.expenses-items');
     appData.validateNumber();
@@ -82,7 +83,7 @@ const appData = {
     for (let i = 0; i < cloneIncomeItem.children.length; i++) {
       cloneIncomeItem.children[i].value = null;
     }
-    
+
     incomeItems[0].parentNode.insertBefore(cloneIncomeItem, incomePlus);
     incomeItems = document.querySelectorAll('.income-items');
     appData.validateNumber();
@@ -199,19 +200,25 @@ const appData = {
   //Валидация чисел
   validateNumber: function() {
     let placeholderSum = document.querySelectorAll('[placeholder="Сумма"]');
+
+    let replaceNumber = function() {
+      this.value = this.value.replace(/[^\d]/g, '');
+    };
+
     placeholderSum.forEach(function(item) {
-      item.addEventListener('input', function() {
-        item.value = item.value.replace(/[^\d]/g, '');
-      });
+      item.addEventListener('input', replaceNumber);
     });
   },
   //Валидация слов
   validateName: function() {
     let placeholderName = document.querySelectorAll('[placeholder="Наименование"]');
+
+   let replaceName = function() {
+      this.value = this.value.replace(/[^а-я\s\W]/g, '');
+    };
+
     placeholderName.forEach(function(item) {
-      item.addEventListener('input', function() {
-        item.value = item.value.replace(/[^а-я\s\W]/g, '');
-      });
+      item.addEventListener('input', replaceName);
     });
   }
 };
