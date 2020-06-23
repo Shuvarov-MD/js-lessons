@@ -34,7 +34,7 @@ let start = document.getElementById('start'),
 
 
 
-//Создаем объект
+//Функция-контруктор объектов
 const AppData = function() {
   this.budget = 0;
   this.income = {};
@@ -304,9 +304,8 @@ AppData.prototype.reset = function() {
   start.style.display = 'block';
   start.disabled = true;
 };
-
+//События
 AppData.prototype.eventsListeners = function() {
-  const _this = this;
   this.validateNumber();
   this.validateName();
 
@@ -337,6 +336,7 @@ AppData.prototype.eventsListeners = function() {
 };
 
 
+//Создаем объект
 const appData = new AppData();
 
 appData.eventsListeners();
