@@ -93,6 +93,9 @@ class AppData {
         }
     };
 
+    expensesItems = document.querySelectorAll('.expenses-items');
+    incomeItems = document.querySelectorAll('.income-items');
+    
     incomeItems.forEach(count);
     expensesItems.forEach(count);
 
