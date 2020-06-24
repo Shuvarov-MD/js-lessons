@@ -31,7 +31,7 @@ const start = document.getElementById('start'),
 let expensesItems = document.querySelectorAll('.expenses-items'),
   incomeItems = document.querySelectorAll('.income-items');
 
-//Функция-контруктор объектов
+//Класс AppData
 class AppData {
   constructor() {
     this.budget = 0;
@@ -51,11 +51,9 @@ class AppData {
   //Месячный доход
   start() {
     this.budget = +salaryAmount.value;
-    this.getExpenses();
-    this.getIncome();
-    this.getExpensesMonth();
-    this.getAddExpenses();
-    this.getAddIncome();
+    this.getExpInc();
+    this.getAddExpInc('addExpenses');
+    this.getAddExpInc('addIncome');
     this.getBudget();
     this.showResult();
 
@@ -65,63 +63,45 @@ class AppData {
     cancel.style.display = 'block';
   }
 
-  //Добавить обязательные расходы
-  addExpensesBlock() {
-    const cloneExpensesItem = expensesItems[0].cloneNode(true);
+  //Добавить дополнительные доходы и обязательные расходы
+  addIncExpBlock(param) {
+    let item = document.querySelectorAll(`.${param}-items`);
+    const cloneItem = item[0].cloneNode(true),
+      itemPlus = document.querySelector(`.${param}_add`);
 
-    for (let i = 0; i < cloneExpensesItem.children.length; i++) {
-      cloneExpensesItem.children[i].value = null;
+    for (let i = 0; i < cloneItem.children.length; i++) {
+      cloneItem.children[i].value = null;
     }
 
-    expensesItems[0].parentNode.insertBefore(cloneExpensesItem, expensesPlus);
-    expensesItems = document.querySelectorAll('.expenses-items');
+    item[0].parentNode.insertBefore(cloneItem, itemPlus);
+    item = document.querySelectorAll(`.${param}-items`);
 
-    if (expensesItems.length === 3) {
-      expensesPlus.style.display = 'none';
-    }
-  }
-
-  //Добавить дополнительные доходы
-  addIncomeBlock() {
-    const cloneIncomeItem = incomeItems[0].cloneNode(true);
-
-    for (let i = 0; i < cloneIncomeItem.children.length; i++) {
-      cloneIncomeItem.children[i].value = null;
-    }
-
-    incomeItems[0].parentNode.insertBefore(cloneIncomeItem, incomePlus);
-    incomeItems = document.querySelectorAll('.income-items');
-
-    if (incomeItems.length === 3) {
-      incomePlus.style.display = 'none';
+    if (item.length === 3) {
+      itemPlus.style.display = 'none';
     }
   }
 
-  //Обязательные расходы
-  getExpenses() {
-    expensesItems.forEach((item) => {
-      const itemExpenses = item.querySelector('.expenses-title').value,
-        cashExpenses = item.querySelector('.expenses-amount').value;
+  //Дополнительные доходы и расходы
+  getExpInc() {
+    const count = (item) => {
+      const startStr = item.className.split('-')[0],
+        itemTitle = item.querySelector(`.${startStr}-title`).value,
+        itemAmount = item.querySelector(`.${startStr}-amount`).value;
 
-        if (itemExpenses !== '' && cashExpenses !== '') {
-          this.expenses[itemExpenses] = +cashExpenses;
+        if (itemTitle !== '' && itemAmount !== '') {
+          this[startStr][itemTitle] = +itemAmount;
         }
-    });
-  }
+    };
 
-  //Дополнительные доходы
-  getIncome() {
-    incomeItems.forEach((item) => {
-      const itemIncome = item.querySelector('.income-title').value,
-        cashIncome = item.querySelector('.income-amount').value;
-
-        if (itemIncome !== '' && cashIncome !== '') {
-          this.income[itemIncome] = +cashIncome;
-        }
-    });
+    incomeItems.forEach(count);
+    expensesItems.forEach(count);
 
     for (let key in this.income) {
       this.incomeMonth += +this.income[key];
+    }
+
+    for (let key in this.expenses) {
+      this.expensesMonth += +this.expenses[key];
     }
   }
 
@@ -139,34 +119,31 @@ class AppData {
     periodSelect.addEventListener('input', () => incomePeriodValue.value = calcValue());
   }
 
-  //Возможные расходы
-  getAddExpenses() {
-    const addExpenses = additionalExpensesItem.value.split(',');
-    addExpenses.forEach((item) => {
-      item = item.trim();
-
-      if (item !== '') {
-        this.addExpenses.push(item);
-      }
-    });
-  }
-
-  //Возможные доходы
-  getAddIncome() {
-    additionalIncomeItem.forEach((item) => {
-      let itemValue = item.value.trim();
-
-      if (itemValue !== '') {
-        this.addIncome.push(itemValue);
-      }
-    });
-  }
-
-  //Расходы за месяц
-  getExpensesMonth() {
-    for (let key in this.expenses) {
-      this.expensesMonth += +this.expenses[key];
+  //Возможные доходы и расходы
+  getAddExpInc(param) {
+    let addItem;
+    if (param === 'addIncome') {
+      addItem = additionalIncomeItem;
+    } else {
+      addItem = additionalExpensesItem.value.split(',');
     }
+    const count = (item) => {
+      if (addItem === additionalIncomeItem) {
+        let itemValue = item.value.trim();
+
+        if (itemValue !== '') {
+          this[param].push(itemValue);
+        }
+      } else {
+        item = item.trim();
+
+        if (item !== '') {
+          this[param].push(item);
+        }
+      }
+    };
+
+    addItem.forEach(count);
   }
 
   //Бюджеты на месяц и день
@@ -286,12 +263,14 @@ class AppData {
     this.budgetMonth = 0;
     this.expensesMonth = 0;
 
+    expensesItems = document.querySelectorAll('.expenses-items');
     if (expensesItems.length > 1) {
       for (let i = 1; i < expensesItems.length; i++) {
         expensesItems[i].remove();
       }
     }
 
+    incomeItems = document.querySelectorAll('.income-items');
     if (incomeItems.length > 1) {
       for (let i = 1; i < incomeItems.length; i++) {
         incomeItems[i].remove();
@@ -324,12 +303,18 @@ class AppData {
     });
 
     start.addEventListener('click', this.start.bind(this));
-    expensesPlus.addEventListener('click', this.addExpensesBlock.bind(this));
-    incomePlus.addEventListener('click', this.addIncomeBlock.bind(this));
+    expensesPlus.addEventListener('click', () => {
+      this.addIncExpBlock('expenses');
+    });
+    incomePlus.addEventListener('click', () => {
+      this.addIncExpBlock('income');
+    });
 
     periodSelect.addEventListener('input', () => periodAmount.innerHTML = periodSelect.value);
 
-    cancel.addEventListener('click', this.reset.bind(this));
+    cancel.addEventListener('click', () => {
+      this.reset();
+    });
   }
 }
 
