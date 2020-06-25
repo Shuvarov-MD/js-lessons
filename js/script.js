@@ -26,7 +26,10 @@ const start = document.getElementById('start'),
   targetAmount = data.querySelector('.target-amount'),
   periodSelect = document.querySelector('.period-select'),
   periodAmount = document.querySelector('.period-amount'),
-  cancel = document.getElementById('cancel');
+  cancel = document.getElementById('cancel'),
+  depositBank = document.querySelector('.deposit-bank'),
+  depositAmount = document.querySelector('.deposit-amount'),
+  depositPercent = document.querySelector('.deposit-percent');
 
 let expensesItems = document.querySelectorAll('.expenses-items'),
   incomeItems = document.querySelectorAll('.income-items');
@@ -54,6 +57,7 @@ class AppData {
     this.getExpInc();
     this.getAddExpInc('addExpenses');
     this.getAddExpInc('addIncome');
+    this.getInfoDeposit();
     this.getBudget();
     this.showResult();
 
@@ -95,7 +99,7 @@ class AppData {
 
     expensesItems = document.querySelectorAll('.expenses-items');
     incomeItems = document.querySelectorAll('.income-items');
-    
+
     incomeItems.forEach(count);
     expensesItems.forEach(count);
 
@@ -151,7 +155,8 @@ class AppData {
 
   //Бюджеты на месяц и день
   getBudget() {
-    this.budgetMonth = this.budget + this.incomeMonth - this.expensesMonth;
+    const monthDeposit = this.moneyDeposit * (this.percentDeposit / 100);
+    this.budgetMonth = this.budget + this.incomeMonth - this.expensesMonth + monthDeposit;
     this.budgetDay = Math.floor(this.budgetMonth  / 30);
   }
 
@@ -175,18 +180,9 @@ class AppData {
 
   //Депозит в банке
   getInfoDeposit() {
-    this.deposit = confirm('Есть ли у вас депозит в банке?');
-
     if (this.deposit) {
-      let percentDeposit, moneyDeposit;
-      do {
-        percentDeposit = prompt('Какой годовой процент?', 10);
-      } while (!isNumber(this.percentDeposit));
-      this.percentDeposit = +percentDeposit;
-      do {
-        moneyDeposit = prompt('Какая сумма заложена?', 10000);
-      } while (!isNumber(this.moneyDeposit));
-      this.moneyDeposit = +moneyDeposit;
+      this.percentDeposit = depositPercent.value;
+      this.moneyDeposit = depositAmount.value;
     }
   }
 
@@ -280,6 +276,13 @@ class AppData {
       }
     }
 
+    depositCheck.checked = false;
+    depositBank.style.display = 'none';
+    depositAmount.style.display = 'none';
+    depositPercent.style.display = 'none';
+    depositBank.value = '';
+    depositAmount.value = '';
+
     expensesPlus.style.display = 'block';
     incomePlus.style.display = 'block';
 
@@ -288,6 +291,43 @@ class AppData {
     cancel.style.display = 'none';
     start.style.display = 'block';
     start.disabled = true;
+  }
+
+  changePercent() {
+    const valueSelect = this.value;
+    if (valueSelect === 'other') {
+      depositPercent.style.display = 'inline-block';
+      depositPercent.value = '';
+      depositPercent.addEventListener('blur', () => {
+        if (!isNumber(depositPercent.value) || depositPercent.value < 0 || depositPercent.value > 100) {
+          start.disabled = true;
+          alert('Введите корректное значение в поле проценты');
+        } else {
+          start.disabled = false;
+        }
+      });
+    } else {
+      depositPercent.value = valueSelect;
+      depositPercent.style.display = 'none';
+    }
+  }
+
+  //Выбор депозита
+  depositHandler() {
+    if (depositCheck.checked) {
+      depositBank.style.display = 'inline-block';
+      depositAmount.style.display = 'inline-block';
+      this.deposit = true;
+      depositBank.addEventListener('change', this.changePercent);
+    } else {
+      depositBank.style.display = 'none';
+      depositAmount.style.display = 'none';
+      depositPercent.style.display = 'none';
+      depositBank.value = '';
+      depositAmount.value = '';
+      this.deposit = false;
+      depositBank.removeEventListener('change', this.changePercent);
+    }
   }
 
   //События
@@ -318,6 +358,8 @@ class AppData {
     cancel.addEventListener('click', () => {
       this.reset();
     });
+
+    depositCheck.addEventListener('change', this.depositHandler.bind(this));
   }
 }
 
