@@ -65,6 +65,24 @@ class AppData {
     inputsDisabled.forEach((item) => item.disabled = true);
     start.style.display = 'none';
     cancel.style.display = 'block';
+
+
+    this.setCookie('budgetMonthValue', budgetMonthValue.value);
+    this.setCookie('budgetDayValue', budgetDayValue.value);
+    this.setCookie('expensesMonthValue', expensesMonthValue.value);
+    this.setCookie('additionalIncomeValue', additionalIncomeValue.value);
+    this.setCookie('additionalExpensesValue', additionalExpensesValue.value);
+    this.setCookie('incomePeriodValue', incomePeriodValue.value);
+    this.setCookie('targetMonthValue', targetMonthValue.value);
+    this.setCookie('isLoad', true);
+    localStorage.setItem('budgetMonthValue', budgetMonthValue.value);
+    localStorage.setItem('budgetDayValue', budgetDayValue.value);
+    localStorage.setItem('expensesMonthValue', expensesMonthValue.value);
+    localStorage.setItem('additionalIncomeValue', additionalIncomeValue.value);
+    localStorage.setItem('additionalExpensesValue', additionalExpensesValue.value);
+    localStorage.setItem('incomePeriodValue', incomePeriodValue.value);
+    localStorage.setItem('targetMonthValue', targetMonthValue.value);
+    localStorage.setItem('isLoad', true);
   }
 
   //Добавить дополнительные доходы и обязательные расходы
@@ -291,6 +309,8 @@ class AppData {
     cancel.style.display = 'none';
     start.style.display = 'block';
     start.disabled = true;
+
+    localStorage.clear();
   }
 
   changePercent() {
@@ -330,6 +350,67 @@ class AppData {
     }
   }
 
+  //Создаем cookie
+  setCookie(name, value, options = {}) {
+    options = {
+      path: '/',
+      expires: new Date(Date.now() + 86400e3),
+      ...options
+    };
+
+    if (options.expires instanceof Date) {
+      options.expires = options.expires.toUTCString();
+    }
+
+    let updatedCookie = name + "=" + value;
+
+    for (let optionKey in options) {
+      updatedCookie += "; " + optionKey;
+      let optionValue = options[optionKey];
+      if (optionValue !== true) {
+        updatedCookie += "=" + optionValue;
+      }
+    }
+
+    document.cookie = updatedCookie;
+  }
+
+  //Удалить все cookies
+  deleteAllCookies(){
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      this.deleteCookie(cookies[i].split("=")[0]);
+    }
+
+  }
+
+  //Удалить cookie
+  deleteCookie(name) {
+    this.setCookie(name, "", {
+      'max-age': -1
+    });
+  }
+
+  //Проверка соответствия localStorage и cookies
+  checkLSCookie() {
+    const cookies = document.cookie.split("; ");
+
+    outer:
+    for (let i = 0; i < localStorage.length; i++) {
+      for (let j = 0; j < cookies.length; j++) {
+        if(localStorage.key(i) === cookies[j].split("=")[0]) {
+          continue outer;
+        }
+      }
+      this.reset();
+      this.deleteAllCookies();
+    }
+    if (cookies.length !== 8) {
+      this.reset();
+      this.deleteAllCookies();
+    }
+  }
+
   //События
   eventsListeners() {
     this.validateNumber();
@@ -345,7 +426,9 @@ class AppData {
       }
     });
 
-    start.addEventListener('click', this.start.bind(this));
+    start.addEventListener('click', this.start.bind(this)
+
+  );
     expensesPlus.addEventListener('click', () => {
       this.addIncExpBlock('expenses');
     });
@@ -360,14 +443,45 @@ class AppData {
     });
 
     depositCheck.addEventListener('change', this.depositHandler.bind(this));
+
+
+
+    budgetMonthValue.value = localStorage.getItem('budgetMonthValue');
+    budgetDayValue.value = localStorage.getItem('budgetDayValue');
+    expensesMonthValue.value = localStorage.getItem('expensesMonthValue');
+    additionalIncomeValue.value = localStorage.getItem('additionalIncomeValue');
+    additionalExpensesValue.value = localStorage.getItem('additionalExpensesValue');
+    incomePeriodValue.value = localStorage.getItem('incomePeriodValue');
+    targetMonthValue.value = localStorage.getItem('targetMonthValue');
+
+
+   if (localStorage.getItem('isLoad')) {
+      const inputsDisabled = document.querySelectorAll('input[type=text]');
+        inputsDisabled.forEach((item) => {
+          item.disabled = true;
+        });
+        start.style.display = 'none';
+        cancel.style.display = 'block';
+    } else {
+      const inputsDisabled = document.querySelectorAll('input[type=text]');
+        inputsDisabled.forEach((item) => {
+          item.disabled = false;
+        });
+        start.style.display = 'block';
+        cancel.style.display = 'none';
+    }
+
+    this.checkLSCookie();
   }
 }
 
 
 //Создаем объект
-const appData = new AppData();
+let appData =  new AppData();
+
 
 appData.eventsListeners();
+
 
 
 
